@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎀자리배치</title>
+    <!-- 귀여운 폰트 적용 (Gaegu 폰트) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8fa3;
+            --primary-hover: #ff758f;
+            --secondary: #a2d2ff;
+            --bg: #fff0f5;
+            --card-bg: #ffffff;
+            --border: #ffccd5;
+            --font-size: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Gaegu', 'Pretendard', cursive, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(#ffc2d1 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            color: #4a4e69;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 36px;
+            color: #ff4d6d;
+            text-shadow: 2px 2px 0px #fff, 4px 4px 0px #ffccd5;
+            letter-spacing: 1px;
+        }
+
+        /* 컨트롤 영역 (설정 및 버튼) */
+        .controls {
+            background: var(--card-bg);
+            padding: 22px;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(255, 182, 193, 0.3);
+            border: 3px solid #ffccd5;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            font-size: 18px;
+            color: #ff4d6d;
+        }
+
+        textarea {
+            width: 100%;
+            height: 75px;
+            padding: 12px;
+            border: 2px solid #ffccd5;
+            border-radius: 16px;
+            resize: vertical;
+            font-size: 16px;
+            background-color: #fffafb;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 50px;
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 0px #c94b63;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0px #c94b63;
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0px #c94b63;
+        }
+
+        button.secondary { background-color: #a2d2ff; box-shadow: 0 4px 0px #689bca; }
+        button.secondary:hover { box-shadow: 0 6px 0px #689bca; }
+        
+        button.success { background-color: #b7e4c7; color: #2d6a4f; box-shadow: 0 4px 0px #74c69d; }
+        button.success:hover { box-shadow: 0 6px 0px #74c69d; }
+        
+        button.warning { background-color: #ffc6ff; color: #5c3d75; box-shadow: 0 4px 0px #c77dff; }
+        button.warning:hover { box-shadow: 0 6px 0px #c77dff; }
+
+        .font-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .font-control input {
+            width: 60px;
+            padding: 6px;
+            border: 2px solid #ffccd5;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 16px;
+            outline: none;
+        }
+
+        /* 칠판/스크린 */
+        .screen-bar {
+            background-color: #84a59d;
+            color: white;
+            text-align: center;
+            padding: 14px;
+            border-radius: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 0px #5d7a73, 0 8px 15px rgba(0,0,0,0.05);
+            border: 3px solid #ffffff;
+        }
+
+        /* 책상 배치 (3분단) */
+        .classroom {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .division {
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 24px;
+            border: 3px dashed #ffccd5;
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.2);
+        }
+
+        .division-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 14px;
+            color: #ff758f;
+        }
+
+        .row-pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .seat {
+            background-color: #fff0f3;
+            height: 70px;
+            border: 2px solid #ffccd5;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .seat:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 4px 10px rgba(255, 143, 163, 0.3);
+        }
+
+        .seat-num {
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            font-size: 13px;
+            color: #ffb5a7;
+            font-weight: bold;
+        }
+
+        .pin-icon {
+            position: absolute;
+            top: 3px;
+            right: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            opacity: 0.3;
+            transition: opacity 0.2s;
+        }
+
+        .seat.fixed .pin-icon, .pin-icon:hover {
+            opacity: 1;
+        }
+
+        .seat.fixed {
+            background-color: #fff3bf;
+            border-color: #ffd43b;
+        }
+
+        .seat.selected {
+            background-color: #ffe3e3;
+            border-color: #ff6b6b;
+            animation: bounce 0.6s infinite alternate;
+        }
+
+        .student-name {
+            font-size: var(--font-size);
+            font-weight: bold;
+            margin-top: 6px;
+            color: #2b2d42;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-5px); }
+        }
+
+        /* 인쇄 설정 */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .container { max-width: 100%; }
+            .classroom { gap: 10px; }
+            .division { border: 2px solid #ccc; box-shadow: none; }
+            .seat { border: 1px solid #777 !important; background: white !important; }
+            .screen-bar { background: #eee !important; color: #000 !important; border: 1px solid #000; box-shadow: none; }
+        }
+
+        /* 모바일 대응 */
+        @media (max-width: 768px) {
+            .classroom { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="no-print">
+        <h1>🎈 자리배치 🎈</h1>
+    </header>
+
+    <!-- 컨트롤 패널 -->
+    <div class="controls no-print">
+        <div class="input-group">
+            <label for="studentList">📝 우리 반 명렬표 (줄바꿈 또는 쉼표로 입력해 주세요)</label>
+            <textarea id="studentList" placeholder="1번 학생&#10;2번 학생&#10;3번 학생..."></textarea>
+        </div>
+
+        <div class="btn-toolbar">
+            <div class="btn-group">
+                <button onclick="randomizeSeats()">🎲 자리 뽑기</button>
+                <button class="secondary" onclick="toggleView()" id="viewBtn">👁️ 시점: 교사</button>
+                <button class="success" onclick="saveData()">💾 저장하기</button>
+                <button class="warning" onclick="loadData()">📂 불러오기</button>
+                <button class="secondary" onclick="window.print()">🖨️ 인쇄하기</button>
+            </div>
+
+            <div class="font-control">
+                <label for="fontSize">글자 크기:</label>
+                <input type="number" id="fontSize" value="18" min="12" max="28" onchange="changeFontSize(this.value)"> px
+            </div>
+        </div>
+        <small style="color: #6c757d; font-size: 14px;">
+            📌 <b>고정석 기능:</b> 자리의 📍 아이콘을 누르면 노란색 📌 고정석이 되며 자리 섞기 시 유지됩니다.<br>
+            🔄 <b>자리 바꿀 때:</b> 서로 바꿀 학생 두 자리를 차례대로 클릭해 주세요.
+        </small>
+    </div>
+
+    <!-- 칠판 / 스크린 -->
+    <div class="screen-bar" id="screenBar">🌱 칠판 / 스크린 (선생님 시점)</div>
+
+    <!-- 3분단 배치 구역 -->
+    <div class="classroom" id="classroom"></div>
+</div>
+
+<script>
+    // 자리 기본 세팅: 3분단 x 5줄 x 2명 = 총 30석
+    const TOTAL_SEATS = 30;
+    let seats = Array(TOTAL_SEATS).fill(null).map(() => ({ name: '', fixed: false }));
+    let selectedSeatIndex = null;
+    let isTeacherView = true;
+
+    // 초기 실행
+    window.onload = () => {
+        // 샘플 이름 30명 자동 생성
+        const sampleNames = Array.from({ length: 30 }, (_, i) => `${i + 1}번 학생`);
+        document.getElementById('studentList').value = sampleNames.join('\n');
+        
+        namesToSeats(sampleNames);
+        render();
+    };
+
+    // 입력값을 seats 배열에 할당
+    function namesToSeats(names) {
+        for (let i = 0; i < TOTAL_SEATS; i++) {
+            seats[i].name = names[i] || '';
+        }
+    }
+
+    // 화면 렌더링
+    function render() {
+        const classroom = document.getElementById('classroom');
+        classroom.innerHTML = '';
+
+        for (let g = 0; g < 3; g++) {
+            const division = document.createElement('div');
+            division.className = 'division';
+            division.innerHTML = `<div class="division-title">✨ ${g + 1} 분단 ✨</div>`;
+
+            for (let r = 0; r < 5; r++) {
+                const rowPair = document.createElement('div');
+                rowPair.className = 'row-pair';
+
+                for (let d = 0; d < 2; d++) {
+                    let seatIndex;
+                    
+                    // 시점 계산 (교사 시점 vs 학생 시점)
+                    if (isTeacherView) {
+                        seatIndex = (g * 10) + (r * 2) + d;
+                    } else {
+                        // 학생 시점일 때 자리 180도 반전
+                        seatIndex = (TOTAL_SEATS - 1) - ((g * 10) + (r * 2) + d);
+                    }
+
+                    const seatData = seats[seatIndex];
+                    const seatEl = document.createElement('div');
+                    seatEl.className = `seat ${seatData.fixed ? 'fixed' : ''} ${selectedSeatIndex === seatIndex ? 'selected' : ''}`;
+                    seatEl.onclick = () => selectSeat(seatIndex);
+
+                    seatEl.innerHTML = `
+                        <span class="seat-num">${seatIndex + 1}</span>
+                        <span class="pin-icon" onclick="togglePin(event, ${seatIndex})" title="고정석 설정/해제">${seatData.fixed ? '📌' : '📍'}</span>
+                        <span class="student-name">${seatData.name || '-'}</span>
+                    `;
+
+                    rowPair.appendChild(seatEl);
+                }
+                division.appendChild(rowPair);
+            }
+            classroom.appendChild(division);
+        }
+    }
+
+    // 명렬표 파싱
+    function getStudentList() {
+        const text = document.getElementById('studentList').value;
+        return text.split(/[\n,]+/).map(s => s.trim()).filter(s => s !== '');
+    }
+
+    // 무작위 자리배치
+    function randomizeSeats() {
+        const allNames = getStudentList();
+
+        // 1. 고정석 학생 이름 확보
+        const fixedNames = seats.filter(s => s.fixed && s.name).map(s => s.name);
+
+        // 2. 고정되지 않은 학생들 추출
+        let freeNames = allNames.filter(name => !fixedNames.includes(name));
+
+        // 3. 고정되지 않은 학생 무작위 셔플
+        for (let i = freeNames.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [freeNames[i], freeNames[j]] = [freeNames[j], freeNames[i]];
+        }
+
+        // 4. 고정되지 않은 자리에 순서대로 배치
+        let nameIdx = 0;
+        for (let i = 0; i < TOTAL_SEATS; i++) {
+            if (!seats[i].fixed) {
+                seats[i].name = freeNames[nameIdx] || '';
+                nameIdx++;
+            }
+        }
+
+        selectedSeatIndex = null;
+        render();
+    }
+
+    // 고정석 핀 토글
+    function togglePin(event, index) {
+        event.stopPropagation();
+        seats[index].fixed = !seats[index].fixed;
+        render();
+    }
+
+    // 자리 선택 및 서로 맞바꾸기 기능
+    function selectSeat(index) {
+        if (selectedSeatIndex === null) {
+            selectedSeatIndex = index;
+        } else if (selectedSeatIndex === index) {
+            selectedSeatIndex = null;
+        } else {
+            const firstIndex = selectedSeatIndex;
+            
+            // 이름 바꿈
+            const tempName = seats[firstIndex].name;
+            seats[firstIndex].name = seats[index].name;
+            seats[index].name = tempName;
+
+            selectedSeatIndex = null;
+        }
+        render();
+    }
+
+    // 교사/학생 시점 전환
+    function toggleView() {
+        isTeacherView = !isTeacherView;
+        const btn = document.getElementById('viewBtn');
+        const bar = document.getElementById('screenBar');
+
+        if (isTeacherView) {
+            btn.innerText = "👁️ 시점: 교사";
+            bar.innerText = "🌱 칠판 / 스크린 (선생님 시점)";
+        } else {
+            btn.innerText = "👁️ 시점: 학생";
+            bar.innerText = "🌱 칠판 / 스크린 (학생 시점 - 뒤집힘)";
+        }
+        render();
+    }
+
+    // 글자 크기 조절
+    function changeFontSize(size) {
+        document.documentElement.style.setProperty('--font-size', size + 'px');
+    }
+
+    // 데이터 저장 (LocalStorage)
+    function saveData() {
+        const payload = {
+            studentList: document.getElementById('studentList').value,
+            seats: seats
+        };
+        localStorage.setItem('cuteSeatData', JSON.stringify(payload));
+        alert('현재 배치 정보가 잘 저장되었어요! 💖');
+    }
+
+    // 데이터 불러오기
+    function loadData() {
+        const saved = localStorage.getItem('cuteSeatData');
+        if (!saved) {
+            alert('저장된 자리 데이터가 없어요 😢');
+            return;
+        }
+        const parsed = JSON.parse(saved);
+        document.getElementById('studentList').value = parsed.studentList;
+        seats = parsed.seats;
+        selectedSeatIndex = null;
+        render();
+        alert('저장된 데이터를 불러왔어요! 🎀');
+    }
+</script>
+
+</body>
+</html>
